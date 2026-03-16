@@ -2,143 +2,206 @@
 <html lang="pa">
 <head>
     <meta charset="UTF-8">
-    <title>Khalsa International School Result System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khalsa International School | Result Portal</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 800px; background: white; padding: 25px; margin: 10px auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #1a237e; text-align: center; border-bottom: 2px solid #1a237e; padding-bottom: 10px; }
-        .section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; margin: 5px 0; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .btn-save { background: #28a745; color: white; }
-        .btn-search { background: #f57c00; color: white; }
-        #reportCard { display: none; margin-top: 30px; border: 8px double #1a237e; padding: 30px; background: white; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
-        .pass { color: green; font-weight: bold; }
-        .fail { color: red; font-weight: bold; }
-        @media print { .no-print { display: none; } #reportCard { display: block !important; margin-top: 0; } }
+        :root { --primary: #1a237e; --secondary: #d32f2f; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 850px; background: white; padding: 25px; margin: auto; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        h2 { color: var(--primary); text-align: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-top: 0; }
+        .section { background: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.3s; padding: 12px; }
+        .btn-save { background: #2e7d32; color: white; width: 100%; font-size: 16px; margin-top: 20px; }
+        .btn-search { background: #ef6c00; color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Report Card Styling */
+        #reportCard { display: none; margin-top: 30px; border: 10px double var(--primary); padding: 40px; background: white; position: relative; }
+        .school-header { text-align: center; border-bottom: 4px solid var(--secondary); margin-bottom: 20px; }
+        .school-header h1 { margin: 0; color: var(--primary); font-size: 32px; letter-spacing: 1px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 16px; }
+        th, td { border: 1px solid #444; padding: 12px; text-align: center; }
+        th { background: #f5f5f5; }
+        
+        .summary-box { display: flex; justify-content: space-between; background: #f9f9f9; padding: 15px; border: 1px solid #444; margin-top: 20px; font-weight: bold; }
+        .pass { color: #2e7d32; } .fail { color: #c62828; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; background: white; }
+            .container { box-shadow: none; margin: 0; width: 100%; max-width: 100%; }
+            #reportCard { display: block !important; border: 5px solid var(--primary); }
+        }
     </style>
 </head>
 <body>
 
 <div class="container no-print">
-    <h2>Result Management System</h2>
+    <h2>Student Result Portal</h2>
     
-    <div class="section" style="background: #fff3e0;">
-        <label><strong>Purana Record Search Karo:</strong></label>
-        <div class="grid">
-            <input type="text" id="searchRoll" placeholder="Roll Number Bharo">
-            <button class="btn-search" onclick="searchData()">Search Record</button>
+    <div class="section" style="background: #fff8e1; border: 1px solid #ffe082;">
+        <label>Find Previous Record:</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+            <button class="btn-search" onclick="searchData()">Search</button>
         </div>
     </div>
 
     <div class="section">
-        <label><strong>Student Detail:</strong></label>
+        <label>Student Details:</label>
         <div class="grid">
-            <input type="text" id="name" placeholder="Name">
-            <input type="text" id="roll" placeholder="Roll No">
-            <select id="className"><option value="10th">10th Class</option><option value="9th">9th Class</option></select>
+            <input type="text" id="name" placeholder="Full Name">
+            <input type="text" id="roll" placeholder="Roll Number">
+            <select id="className">
+                <option value="9th">9th Class</option>
+                <option value="10th">10th Class</option>
+                <option value="11th">11th Class</option>
+                <option value="12th">12th Class</option>
+            </select>
             <input type="text" id="session" value="2025-26">
         </div>
-        <label><strong>Marks (Out of 100):</strong></label>
+
+        <label style="margin-top: 20px;">Subject Marks (Out of 100):</label>
         <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
-            <input type="number" id="m" placeholder="Maths">
-            <input type="number" id="s" placeholder="Science">
-            <input type="number" id="p" placeholder="Punjabi">
-            <input type="number" id="e" placeholder="English">
-            <input type="number" id="h" placeholder="Hindi">
-            <input type="number" id="ss" placeholder="SSt">
+            <div><label>Maths</label><input type="number" id="m"></div>
+            <div><label>Science</label><input type="number" id="s"></div>
+            <div><label>Punjabi</label><input type="number" id="p"></div>
+            <div><label>English</label><input type="number" id="e"></div>
+            <div><label>Hindi</label><input type="number" id="h"></div>
+            <div><label>S. St.</label><input type="number" id="ss"></div>
         </div>
-        <button class="btn-save" onclick="generateAndSave()">Save & Generate Report Card</button>
+        
+        <button class="btn-save" onclick="processResult()">Generate Report Card & Save to Cloud</button>
     </div>
 </div>
 
 <div id="reportCard" class="container">
-    <div style="text-align: center;">
-        <h1 style="margin:0; color:#1a237e;">KHALSA INTERNATIONAL SCHOOL</h1>
-        <p>Annual Examination Result - Session <span id="rSession"></span></p>
+    <div class="school-header">
+        <h1>KHALSA INTERNATIONAL SCHOOL</h1>
+        <p><strong>RECOGNIZED & AFFILIATED SCHOOL</strong></p>
+        <h3 style="margin-top: 10px; background: #1a237e; color: white; display: inline-block; padding: 5px 20px;">PROGRESS REPORT CARD</h3>
+        <p>Academic Session: <span id="rSession"></span></p>
     </div>
-    <hr>
-    <div class="grid">
-        <p><strong>Name:</strong> <span id="rName"></span></p>
-        <p><strong>Roll No:</strong> <span id="rRoll"></span></p>
-        <p><strong>Class:</strong> <span id="rClass"></span></p>
+
+    <div style="display: flex; justify-content: space-between; margin: 20px 0; font-weight: bold;">
+        <span>Student Name: <span id="rName" style="border-bottom: 1px dotted #000;"></span></span>
+        <span>Roll No: <span id="rRoll"></span></span>
+        <span>Class: <span id="rClass"></span></span>
     </div>
-    <table id="marksTable">
-        <thead><tr><th>Subject</th><th>Max Marks</th><th>Obtained</th><th>Grade</th></tr></thead>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject Name</th>
+                <th>Maximum Marks</th>
+                <th>Marks Obtained</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
         <tbody id="rBody"></tbody>
     </table>
-    <div class="grid" style="background:#f2f2f2; padding:10px; margin-top:15px; border:1px solid #333;">
-        <span><strong>Total:</strong> <span id="rTotal"></span>/600</span>
-        <span><strong>Percentage:</strong> <span id="rPer"></span>%</span>
-        <span><strong>Result:</strong> <span id="rStatus"></span></span>
+
+    <div class="summary-box">
+        <span>Grand Total: <span id="rTotal"></span> / 600</span>
+        <span>Percentage: <span id="rPer"></span>%</span>
+        <span>Final Result: <span id="rStatus"></span></span>
     </div>
-    <button class="no-print" onclick="window.print()" style="background:#007bff; color:white;">Print / Save PDF</button>
+
+    <div style="margin-top: 60px; display: flex; justify-content: space-between; font-weight: bold;">
+        <div style="border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px;">Class Teacher</div>
+        <div style="border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px;">Principal Sign</div>
+    </div>
+
+    <button class="no-print" onclick="window.print()" style="margin-top: 30px; background: #007bff; color: white; width: 100%; font-size: 16px;">Download/Print Report Card</button>
 </div>
 
 <script>
-const SCRIPT_URL = 'TUHADA_SCRIPT_URL_ITHE_PAO';
+    // Tuhada Google Script URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9PX1qPXn5A0tu2IXraxesgbSCGSqy3gSW8mbVqDH3gTw6FpiW5HBrWsJWS9qBoTfX/exec';
 
-function getGrade(m) {
-    if(m >= 90) return 'A+'; if(m >= 80) return 'A'; if(m >= 70) return 'B';
-    if(m >= 60) return 'C'; if(m >= 33) return 'D'; return 'E';
-}
+    function calculateGrade(m) {
+        if(m >= 90) return 'A+'; if(m >= 80) return 'A';
+        if(m >= 70) return 'B'; if(m >= 60) return 'C';
+        if(m >= 33) return 'D'; return 'E (Fail)';
+    }
 
-async function generateAndSave() {
-    const data = {
-        name: document.getElementById('name').value,
-        roll: document.getElementById('roll').value,
-        cls: document.getElementById('className').value,
-        session: document.getElementById('session').value,
-        maths: parseInt(document.getElementById('m').value)||0,
-        science: parseInt(document.getElementById('s').value)||0,
-        punjabi: parseInt(document.getElementById('p').value)||0,
-        english: parseInt(document.getElementById('e').value)||0,
-        hindi: parseInt(document.getElementById('h').value)||0,
-        sst: parseInt(document.getElementById('ss').value)||0
-    };
-    data.total = data.maths+data.science+data.punjabi+data.english+data.hindi+data.sst;
-    data.per = (data.total/6).toFixed(2);
-    data.status = (data.maths<33||data.science<33||data.punjabi<33||data.english<33||data.hindi<33||data.sst<33) ? "RE-APPEAR" : "PASSED";
+    async function processResult() {
+        const payload = {
+            name: document.getElementById('name').value,
+            roll: document.getElementById('roll').value,
+            cls: document.getElementById('className').value,
+            session: document.getElementById('session').value,
+            maths: parseInt(document.getElementById('m').value) || 0,
+            science: parseInt(document.getElementById('s').value) || 0,
+            punjabi: parseInt(document.getElementById('p').value) || 0,
+            english: parseInt(document.getElementById('e').value) || 0,
+            hindi: parseInt(document.getElementById('h').value) || 0,
+            sst: parseInt(document.getElementById('ss').value) || 0
+        };
 
-    // Show on Report Card
-    document.getElementById('rName').innerText = data.name.toUpperCase();
-    document.getElementById('rRoll').innerText = data.roll;
-    document.getElementById('rClass').innerText = data.cls;
-    document.getElementById('rSession').innerText = data.session;
-    document.getElementById('rTotal').innerText = data.total;
-    document.getElementById('rPer').innerText = data.per;
-    document.getElementById('rStatus').innerText = data.status;
-    document.getElementById('rStatus').className = (data.status==="PASSED") ? "pass" : "fail";
+        if(!payload.name || !payload.roll) return alert("Please fill Name and Roll No.");
 
-    const subjects = [['Maths', data.maths],['Science', data.science],['Punjabi', data.punjabi],['English', data.english],['Hindi', data.hindi],['SSt', data.sst]];
-    let rows = "";
-    subjects.forEach(s => { rows += `<tr><td>${s[0]}</td><td>100</td><td>${s[1]}</td><td>${getGrade(s[1])}</td></tr>`; });
-    document.getElementById('rBody').innerHTML = rows;
-    document.getElementById('reportCard').style.display = 'block';
+        payload.total = payload.maths + payload.science + payload.punjabi + payload.english + payload.hindi + payload.sst;
+        payload.per = (payload.total / 6).toFixed(2);
+        
+        // Pass if all subjects >= 33
+        const marksArr = [payload.maths, payload.science, payload.punjabi, payload.english, payload.hindi, payload.sst];
+        payload.status = marksArr.every(m => m >= 33) ? "PASSED" : "RE-APPEAR";
 
-    // Save to Sheet
-    try {
-        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-        alert("Record Saved to Google Sheet!");
-    } catch(e) { alert("Error saving data"); }
-}
+        // Display on Report Card
+        document.getElementById('rName').innerText = payload.name.toUpperCase();
+        document.getElementById('rRoll').innerText = payload.roll;
+        document.getElementById('rClass').innerText = payload.cls;
+        document.getElementById('rSession').innerText = payload.session;
+        document.getElementById('rTotal').innerText = payload.total;
+        document.getElementById('rPer').innerText = payload.per;
+        document.getElementById('rStatus').innerText = payload.status;
+        document.getElementById('rStatus').className = (payload.status === "PASSED") ? "pass" : "fail";
 
-async function searchData() {
-    const roll = document.getElementById('searchRoll').value;
-    try {
-        const res = await fetch(`${SCRIPT_URL}?roll=${roll}`);
-        const data = await res.json();
-        if(data.name) {
-            document.getElementById('name').value = data.name;
-            document.getElementById('roll').value = data.roll;
-            document.getElementById('className').value = data.cls;
-            alert("Record Found! Click 'Save & Generate' to see Report Card.");
-        } else { alert("No Record Found"); }
-    } catch(e) { alert("Search Error"); }
-}
+        let rows = "";
+        const subs = [["Mathematics", payload.maths], ["Science", payload.science], ["Punjabi", payload.punjabi], ["English", payload.english], ["Hindi", payload.hindi], ["Social Science", payload.sst]];
+        subs.forEach(s => {
+            rows += `<tr><td>${s[0]}</td><td>100</td><td>${s[1]}</td><td>${calculateGrade(s[1])}</td></tr>`;
+        });
+        document.getElementById('rBody').innerHTML = rows;
+        document.getElementById('reportCard').style.display = 'block';
+
+        // Send to Google Sheets
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+            alert("Success: Record saved to Google Sheets!");
+        } catch (e) { console.error("Cloud Error", e); }
+    }
+
+    async function searchData() {
+        const roll = document.getElementById('searchRoll').value;
+        if(!roll) return alert("Enter Roll Number first!");
+
+        try {
+            const res = await fetch(`${SCRIPT_URL}?roll=${roll}`);
+            const data = await res.json();
+            if(data.name) {
+                document.getElementById('name').value = data.name;
+                document.getElementById('roll').value = data.roll;
+                document.getElementById('className').value = data.cls;
+                document.getElementById('m').value = data.maths;
+                document.getElementById('s').value = data.science;
+                document.getElementById('p').value = data.punjabi;
+                document.getElementById('e').value = data.english;
+                document.getElementById('h').value = data.hindi;
+                document.getElementById('ss').value = data.sst;
+                alert("Record Found!");
+            } else { alert("No Record Found."); }
+        } catch(e) { alert("Error connecting to server."); }
+    }
 </script>
+
 </body>
 </html>
