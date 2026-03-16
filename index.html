@@ -2,145 +2,239 @@
 <html lang="pa">
 <head>
     <meta charset="UTF-8">
-    <title>Khalsa International School | Step-wise ERP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khalsa International School | ERP Management</title>
     <style>
-        :root { --primary: #1a237e; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        :root { --primary: #1a237e; --accent: #ffd700; --bg: #f0f2f5; }
+        body { font-family: 'Times New Roman', serif; background: var(--bg); margin: 0; padding: 15px; }
+        .no-print { max-width: 950px; background: white; padding: 25px; margin: auto; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 6px solid var(--primary); }
         
-        .step-box { border-left: 4px solid var(--primary); padding: 15px; margin-bottom: 20px; background: #f9f9f9; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%; box-sizing: border-box; }
-        
-        .marks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .marks-input { background: #fffde7; border: 1px solid #ffd54f; }
+        /* Navigation Tabs */
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #eee; padding: 5px; border-radius: 8px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; }
 
-        button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
-        .btn-next { background: var(--primary); color: white; width: 100%; margin-top: 20px; }
+        /* Form Styling */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%; box-sizing: border-box; font-size: 15px; }
         
-        .record-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-top: 10px; background: #fff; display: flex; justify-content: space-between; align-items: center; }
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; color: white; }
+        .marks-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #fffde7; padding: 15px; border-radius: 8px; border: 1px solid #ffe082; margin-top: 10px; }
+        .marks-box { display: flex; flex-direction: column; }
+        .marks-box label { font-size: 13px; font-weight: bold; margin-bottom: 3px; color: var(--primary); }
+
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; padding: 12px; }
+        .btn-main { background: var(--primary); color: white; width: 100%; font-size: 18px; margin-top: 15px; }
+
+        /* Result Lock Message */
+        .lock-card { text-align: center; padding: 40px; background: #fff3e0; border: 2px dashed #ffb74d; border-radius: 10px; margin-top: 20px; }
+
+        /* Report Card (For Print) */
+        #reportCard { display: none; width: 210mm; min-height: 297mm; padding: 15mm; margin: auto; background: white; position: relative; border: 1px solid #ddd; }
+        .letterhead-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.12; pointer-events: none; }
+        .content-layer { position: relative; z-index: 2; }
+        .school-header { display: flex; align-items: center; justify-content: center; gap: 20px; text-align: center; border-bottom: 4px solid var(--primary); padding-bottom: 10px; }
+        .school-logo { width: 90px; height: 90px; object-fit: contain; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        th { background: #f2f2f2; -webkit-print-color-adjust: exact; }
+
+        .footer-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; border: 2px solid #333; padding: 15px; margin-top: 20px; background: #f9f9f9; font-weight: bold; -webkit-print-color-adjust: exact; }
+
+        @media print {
+            .no-print { display: none !important; }
+            #reportCard { display: block !important; border: none; width: 100%; margin: 0; padding: 5mm; }
+            body { background: white; padding: 0; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2 style="text-align: center; color: var(--primary);">Student Progress Tracker</h2>
+<div class="no-print">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('admin')">Admin (Marks Entry)</button>
+        <button class="tab-btn" onclick="showTab('student')">Student Portal (Search)</button>
+    </div>
 
-    <div class="step-box">
-        <p><strong>Step 1: Student & Exam Selection</strong></p>
+    <div id="adminTab">
+        <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9;">
+            <strong>Set Result Declaration Date:</strong>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <input type="date" id="publishDate" style="width: auto;">
+                <button onclick="setResultDate()" style="background: #2e7d32; color: white;">Lock Result Until This Date</button>
+            </div>
+        </div>
+
+        <h3 style="color: var(--primary);">Marks Entry Wizard</h3>
         <div class="grid">
-            <input type="text" id="rollNo" placeholder="Roll Number (e.g. 101)">
-            <select id="examType" onchange="toggleMarksFields()">
-                <option value="">-- Select Exam --</option>
+            <input type="text" id="name" placeholder="Student Full Name">
+            <input type="text" id="roll" placeholder="Roll Number">
+            <select id="className" onchange="loadSubjects()">
+                <option value="">-- Select Class --</option>
+                <option value="Nursery">Nursery</option>
+                <option value="LKG">L.K.G</option>
+                <option value="UKG">U.K.G</option>
+                <option value="1st">1st Class</option>
+                <option value="2nd">2nd Class</option>
+                <option value="3rd">3rd Class</option>
+                <option value="4th">4th Class</option>
+                <option value="5th">5th Class</option>
+                <option value="6th">6th Class</option>
+                <option value="7th">7th Class</option>
+                <option value="8th">8th Class</option>
+                <option value="9th">9th Class</option>
+                <option value="10th">10th Class</option>
+                <option value="11th">11th Class</option>
+                <option value="12th">12th Class</option>
+            </select>
+            <select id="examType">
                 <option value="PT1">PT 1 (Max: 35)</option>
                 <option value="PT2">PT 2 (Max: 35)</option>
                 <option value="SA1">SA 1 (Max: 80)</option>
                 <option value="PT3">PT 3 (Max: 35)</option>
-                <option value="PB">PT4 / Pre-Board (Max: 80)</option>
+                <option value="PB">PT 4 / Pre-Board (Max: 80)</option>
                 <option value="SA2">SA 2 (Max: 80)</option>
             </select>
-            <select id="className" onchange="toggleMarksFields()">
-                <option value="">-- Select Class --</option>
-                <option value="9th">9th Class</option>
-                <option value="10th">10th Class</option>
-            </select>
         </div>
+
+        <div id="marksArea" class="marks-section">
+            <p style="grid-column: 1/-1; color: #999; text-align: center;">Select Class to Load Subjects</p>
+        </div>
+        
+        <button class="btn-main" onclick="uploadRecord()">Save This Exam Record</button>
     </div>
 
-    <div id="marksEntrySection" class="step-box" style="display:none;">
-        <p><strong>Step 2: Enter Marks for <span id="selectedExamLabel" style="color:red;"></span></strong></p>
-        <div id="subjectInputs" class="marks-grid">
+    <div id="studentTab" style="display:none;">
+        <h3 style="color: var(--primary); text-align: center;">Find Student Result</h3>
+        <div style="display: flex; gap: 10px; max-width: 500px; margin: auto;">
+            <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+            <button onclick="searchStudent()" style="background: #ef6c00; color: white; width: 120px;">Search</button>
+        </div>
+        <div id="portalView"></div>
+    </div>
+</div>
+
+<div id="reportCard">
+    <img src="letterhead.jpg" class="letterhead-bg">
+    <div class="content-layer">
+        <div class="school-header">
+            <img src="logo.png" class="school-logo">
+            <div>
+                <h1 style="margin:0; color:var(--primary);">KHALSA INTERNATIONAL SCHOOL</h1>
+                <p style="font-weight:bold; letter-spacing: 1px;">Academic Session 2025-26</p>
             </div>
-        <button class="btn-next" onclick="uploadMarks()">Save This Exam Record</button>
-    </div>
+        </div>
 
-    <hr>
+        <div class="grid" style="margin-top: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-weight: bold;">
+            <div>Name: <span id="rName" style="color:var(--primary)"></span></div>
+            <div>Roll No: <span id="rRoll"></span></div>
+            <div>Class: <span id="rClass"></span></div>
+        </div>
 
-    <h3>Full Year Records (Database)</h3>
-    <div id="liveRecords">
-        <p style="color: #888;">No records loaded. Use Search to see total progress.</p>
+        <div id="printResultTable">
+            </div>
+
+        <div class="footer-summary" id="printSummary">
+            </div>
+
+        <div style="margin-top: 100px; display: flex; justify-content: space-between; font-weight: bold;">
+            <span style="border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px;">Class Teacher</span>
+            <span style="border-top: 1px solid #000; width: 180px; text-align: center; padding-top: 5px;">Principal Sign</span>
+        </div>
+        <button class="no-print btn-main" onclick="window.print()" style="background: #2e7d32; margin-top: 50px;">Confirm & Print Report Card</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9PX1qPXn5A0tu2IXraxesgbSCGSqy3gSW8mbVqDH3gTw6FpiW5HBrWsJWS9qBoTfX/exec';
-    
-    // Class wise subjects as per your requirement
-    const subjects = {
-        "9th": ["English", "Punjabi", "Hindi", "Maths", "Science", "S.S.T"],
-        "10th": ["English", "Punjabi", "Hindi", "Maths", "Science", "S.S.T"]
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcYsihOGwDdkXAdCCIhpsvyGw5VIFsIhIGSNZwHg8qoDevFbJuUvVcu7VQs_QkJnFv/exec';
+
+    const config = {
+        "Nursery": ["English", "Punjabi", "Hindi", "Maths", "Drawing", "G.K"],
+        "LKG": ["English", "Punjabi", "Hindi", "Maths", "Drawing", "G.K"],
+        "UKG": ["English", "Punjabi", "Hindi", "Maths", "Drawing", "G.K", "E.V.S"],
+        "1to5": ["English", "Punjabi", "Hindi", "Maths", "Drawing", "G.K", "E.V.S"],
+        "6to10": ["English", "Punjabi", "Hindi", "Maths", "Drawing", "G.K", "E.V.S", "S.S.T"],
+        "11to12": ["English", "Punjabi", "History", "Sociology", "Physical Education", "E.V.S", "Computer"]
     };
 
-    function toggleMarksFields() {
-        const exam = document.getElementById('examType').value;
-        const cls = document.getElementById('className').value;
-        const section = document.getElementById('marksEntrySection');
-        const inputArea = document.getElementById('subjectInputs');
-
-        if(exam && cls) {
-            section.style.display = "block";
-            document.getElementById('selectedExamLabel').innerText = exam;
-            
-            inputArea.innerHTML = subjects[cls].map(sub => `
-                <div>
-                    <label style="font-size:12px; font-weight:bold;">${sub}</label>
-                    <input type="number" class="m-input" data-sub="${sub}" placeholder="Marks">
-                </div>
-            `).join('');
-        } else {
-            section.style.display = "none";
-        }
+    function showTab(tab) {
+        document.getElementById('adminTab').style.display = tab === 'admin' ? 'block' : 'none';
+        document.getElementById('studentTab').style.display = tab === 'student' ? 'block' : 'none';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(tab)));
     }
 
-    async function uploadMarks() {
-        const roll = document.getElementById('rollNo').value;
-        const exam = document.getElementById('examType').value;
+    function loadSubjects() {
         const cls = document.getElementById('className').value;
+        let subs = [];
+        if (cls === "Nursery" || cls === "LKG") subs = config["Nursery"];
+        else if (cls === "UKG") subs = config["UKG"];
+        else if (["1st", "2nd", "3rd", "4th", "5th"].includes(cls)) subs = config["1to5"];
+        else if (["6th", "7th", "8th", "9th", "10th"].includes(cls)) subs = config["6to10"];
+        else if (["11th", "12th"].includes(cls)) subs = config["11to12"];
+
+        document.getElementById('marksArea').innerHTML = subs.map(s => `
+            <div class="marks-box">
+                <label>${s}</label>
+                <input type="number" class="m-input" data-sub="${s}" placeholder="Enter Marks">
+            </div>
+        `).join('');
+    }
+
+    async function setResultDate() {
+        const date = document.getElementById('publishDate').value;
+        if(!date) return alert("Select Date");
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({action: "setResultDate", date: date}) });
+        alert("Result Locked Successfully until " + date);
+    }
+
+    async function uploadRecord() {
         const inputs = document.querySelectorAll('.m-input');
-
-        if(!roll) return alert("Enter Roll Number first!");
-
-        let marksData = {};
-        inputs.forEach(i => {
-            marksData[i.dataset.sub] = i.value || 0;
-        });
-
         const payload = {
-            action: "updateMarks",
-            roll: roll,
-            exam: exam,
-            class: cls,
-            marks: marksData
+            name: document.getElementById('name').value,
+            roll: document.getElementById('roll').value,
+            cls: document.getElementById('className').value,
+            exam: document.getElementById('examType').value,
+            marks: {}
         };
+
+        if(!payload.name || !payload.roll) return alert("Fill Name and Roll No");
+        inputs.forEach(i => payload.marks[i.dataset.sub] = i.value || 0);
 
         try {
             const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-            alert(exam + " Marks Updated Successfully!");
-            loadGrandTotal(roll); // Refresh View
+            alert("Record Synced with Cloud!");
         } catch(e) { alert("Error uploading marks"); }
     }
 
-    async function loadGrandTotal(roll) {
-        // Fetch full year data for this student and show grand total
-        const res = await fetch(`${SCRIPT_URL}?type=fullRecord&roll=${roll}`);
-        const data = await res.json();
-        
-        const recordDiv = document.getElementById('liveRecords');
-        if(data.name) {
-            recordDiv.innerHTML = `
-                <div class="record-card">
-                    <div>
-                        <strong>${data.name} (Roll: ${data.roll})</strong><br>
-                        <small>Class: ${data.class}</small>
-                    </div>
-                    <div style="text-align:right;">
-                        <span class="badge" style="background:green;">Grand Total: ${data.grandTotal}</span><br>
-                        <span class="badge" style="background:blue;">Percentage: ${data.percentage}%</span>
-                    </div>
-                </div>
-            `;
-        }
+    async function searchStudent() {
+        const roll = document.getElementById('searchRoll').value;
+        const portal = document.getElementById('portalView');
+        portal.innerHTML = "Fetching record...";
+
+        try {
+            const res = await fetch(`${SCRIPT_URL}?type=search&roll=${roll}`);
+            const data = await res.json();
+
+            if(data.locked) {
+                portal.innerHTML = `<div class="lock-card"><h2>⚠️ Result is Locked</h2><p>Khalsa International School will declare results on <b>${data.publishDate}</b></p></div>`;
+            } else if(data.name) {
+                portal.innerHTML = `<div style="text-align:center; margin-top:20px; padding:20px; background:#e3f2fd; border-radius:10px;">
+                    <h3>Name: ${data.name}</h3>
+                    <p>Class: ${data.cls} | Roll No: ${data.roll}</p>
+                    <h2 style="color: #1a237e;">Grand Total: ${data.grandTotal}</h2>
+                    <p>Final Status: <b>${data.status}</b></p>
+                    <button onclick="showPrintCard('${data.roll}')" style="background:#2e7d32; color:white; padding:10px 20px;">View Full Report Card</button>
+                </div>`;
+            } else {
+                portal.innerHTML = "<p style='color:red; text-align:center;'>Record Not Found</p>";
+            }
+        } catch(e) { portal.innerHTML = "Error connecting to server."; }
+    }
+
+    function showPrintCard(roll) {
+        // Iis function vich tusi full report card formatting logic add kar sakde ho
+        document.getElementById('reportCard').style.display = 'block';
+        alert("Preparing Print View...");
     }
 </script>
 
