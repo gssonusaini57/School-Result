@@ -2,187 +2,147 @@
 <html lang="pa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khalsa International School | ERP System</title>
+    <title>Khalsa International School | Step-wise ERP</title>
     <style>
-        :root { --primary: #1a237e; --secondary: #c62828; --bg: #f0f4f8; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; }
+        :root { --primary: #1a237e; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
-        /* Navigation */
-        .navbar { background: var(--primary); color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
-        .tabs { display: flex; justify-content: center; background: #fff; border-bottom: 2px solid #ddd; }
-        .tab-btn { padding: 15px 25px; cursor: pointer; border: none; background: none; font-weight: bold; color: #555; }
-        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-
-        .container { max-width: 1100px; margin: 20px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .step-box { border-left: 4px solid var(--primary); padding: 15px; margin-bottom: 20px; background: #f9f9f9; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%; box-sizing: border-box; }
         
-        /* Form & Inputs */
-        .form-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; }
+        .marks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .marks-input { background: #fffde7; border: 1px solid #ffd54f; }
+
+        button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .btn-next { background: var(--primary); color: white; width: 100%; margin-top: 20px; }
         
-        /* Marks Table */
-        .exam-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .exam-title { grid-column: 1/-1; background: var(--primary); color: white; padding: 5px 10px; font-size: 14px; border-radius: 4px; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #f5f5f5; color: var(--primary); }
-
-        .status-pass { color: green; font-weight: bold; }
-        .status-fail { color: red; font-weight: bold; }
-
-        /* Print Card */
-        #reportCard { display: none; padding: 20px; border: 10px double var(--primary); background: white; }
-        
-        @media print {
-            .no-print { display: none !important; }
-            #reportCard { display: block !important; border: 5px solid var(--primary); }
-        }
+        .record-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-top: 10px; background: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; color: white; }
     </style>
 </head>
 <body>
 
-<div class="navbar no-print">KHALSA INTERNATIONAL SCHOOL - MANAGEMENT SYSTEM</div>
+<div class="container">
+    <h2 style="text-align: center; color: var(--primary);">Student Progress Tracker</h2>
 
-<div class="tabs no-print">
-    <button class="tab-btn active" onclick="showPage('entry')">Marks Entry</button>
-    <button class="tab-btn" onclick="showPage('dashboard')">Admin Dashboard (Records)</button>
-</div>
-
-<div id="entryPage" class="container no-print">
-    <h3>Enter Student Marks</h3>
-    <div class="form-section">
-        <input type="text" id="name" placeholder="Student Name">
-        <input type="text" id="roll" placeholder="Roll Number">
-        <select id="className" onchange="loadSubjectFields()">
-            <option value="">Select Class</option>
-            <option value="9th">9th Class</option>
-            <option value="10th">10th Class</option>
+    <div class="step-box">
+        <p><strong>Step 1: Student & Exam Selection</strong></p>
+        <div class="grid">
+            <input type="text" id="rollNo" placeholder="Roll Number (e.g. 101)">
+            <select id="examType" onchange="toggleMarksFields()">
+                <option value="">-- Select Exam --</option>
+                <option value="PT1">PT 1 (Max: 35)</option>
+                <option value="PT2">PT 2 (Max: 35)</option>
+                <option value="SA1">SA 1 (Max: 80)</option>
+                <option value="PT3">PT 3 (Max: 35)</option>
+                <option value="PB">PT4 / Pre-Board (Max: 80)</option>
+                <option value="SA2">SA 2 (Max: 80)</option>
             </select>
-    </div>
-
-    <div id="subjectContainer">
+            <select id="className" onchange="toggleMarksFields()">
+                <option value="">-- Select Class --</option>
+                <option value="9th">9th Class</option>
+                <option value="10th">10th Class</option>
+            </select>
         </div>
-
-    <button onclick="saveRecord()" style="background: var(--primary); color: white; padding: 15px; width: 100%; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Save Full Year Record</button>
-</div>
-
-<div id="dashboardPage" class="container no-print" style="display:none;">
-    <h3>All Student Records</h3>
-    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <input type="text" id="searchBox" placeholder="Search by Name or Roll No">
-        <button onclick="refreshData()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Refresh Data</button>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Roll No</th>
-                <th>Name</th>
-                <th>Class</th>
-                <th>PT1+PT2</th>
-                <th>SA1</th>
-                <th>PT3+PT4</th>
-                <th>SA2</th>
-                <th>Grand Total</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="adminTableBody">
-            </tbody>
-    </table>
-</div>
 
-<div id="reportCard">
-    <div style="text-align: center; border-bottom: 2px solid var(--primary);">
-        <h1>KHALSA INTERNATIONAL SCHOOL</h1>
-        <p>Annual Academic Performance Record</p>
+    <div id="marksEntrySection" class="step-box" style="display:none;">
+        <p><strong>Step 2: Enter Marks for <span id="selectedExamLabel" style="color:red;"></span></strong></p>
+        <div id="subjectInputs" class="marks-grid">
+            </div>
+        <button class="btn-next" onclick="uploadMarks()">Save This Exam Record</button>
     </div>
-    <div id="cardContent" style="margin-top: 20px;"></div>
-    <div style="margin-top: 50px; display: flex; justify-content: space-between;">
-        <p>Class Teacher</p>
-        <p>Principal</p>
+
+    <hr>
+
+    <h3>Full Year Records (Database)</h3>
+    <div id="liveRecords">
+        <p style="color: #888;">No records loaded. Use Search to see total progress.</p>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = 'TUHADA_SCRIPT_URL_ITHE_PAO';
-    const classes = ["9th", "10th"]; // Example classes
-    const subjects = ["English", "Punjabi", "Maths", "Science", "S.S.T"];
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9PX1qPXn5A0tu2IXraxesgbSCGSqy3gSW8mbVqDH3gTw6FpiW5HBrWsJWS9qBoTfX/exec';
+    
+    // Class wise subjects as per your requirement
+    const subjects = {
+        "9th": ["English", "Punjabi", "Hindi", "Maths", "Science", "S.S.T"],
+        "10th": ["English", "Punjabi", "Hindi", "Maths", "Science", "S.S.T"]
+    };
 
-    function showPage(page) {
-        document.getElementById('entryPage').style.display = page === 'entry' ? 'block' : 'none';
-        document.getElementById('dashboardPage').style.display = page === 'dashboard' ? 'block' : 'none';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(page)));
-        if(page === 'dashboard') refreshData();
-    }
+    function toggleMarksFields() {
+        const exam = document.getElementById('examType').value;
+        const cls = document.getElementById('className').value;
+        const section = document.getElementById('marksEntrySection');
+        const inputArea = document.getElementById('subjectInputs');
 
-    function loadSubjectFields() {
-        let container = document.getElementById('subjectContainer');
-        container.innerHTML = "";
-
-        subjects.forEach(sub => {
-            container.innerHTML += `
-                <div class="exam-grid">
-                    <div class="exam-title">${sub}</div>
-                    <div><label>PT1 (35)</label><input type="number" class="m-input" data-sub="${sub}" data-exam="pt1"></div>
-                    <div><label>PT2 (35)</label><input type="number" class="m-input" data-sub="${sub}" data-exam="pt2"></div>
-                    <div><label>SA1 (80)</label><input type="number" class="m-input" data-sub="${sub}" data-exam="sa1"></div>
-                    <div><label>PT3 (35)</label><input type="number" class="m-input" data-sub="${sub}" data-exam="pt3"></div>
-                    <div><label>Pre-B (80)</label><input type="number" class="m-input" data-sub="${sub}" data-exam="pb"></div>
-                    <div><label>SA2 (80)</label><input type="number" class="m-input" data-sub="${sub}" data-exam="sa2"></div>
+        if(exam && cls) {
+            section.style.display = "block";
+            document.getElementById('selectedExamLabel').innerText = exam;
+            
+            inputArea.innerHTML = subjects[cls].map(sub => `
+                <div>
+                    <label style="font-size:12px; font-weight:bold;">${sub}</label>
+                    <input type="number" class="m-input" data-sub="${sub}" placeholder="Marks">
                 </div>
-            `;
-        });
+            `).join('');
+        } else {
+            section.style.display = "none";
+        }
     }
 
-    async function saveRecord() {
-        let inputs = document.querySelectorAll('.m-input');
-        let record = {
-            name: document.getElementById('name').value,
-            roll: document.getElementById('roll').value,
-            cls: document.getElementById('className').value,
-            scores: {}
+    async function uploadMarks() {
+        const roll = document.getElementById('rollNo').value;
+        const exam = document.getElementById('examType').value;
+        const cls = document.getElementById('className').value;
+        const inputs = document.querySelectorAll('.m-input');
+
+        if(!roll) return alert("Enter Roll Number first!");
+
+        let marksData = {};
+        inputs.forEach(i => {
+            marksData[i.dataset.sub] = i.value || 0;
+        });
+
+        const payload = {
+            action: "updateMarks",
+            roll: roll,
+            exam: exam,
+            class: cls,
+            marks: marksData
         };
 
-        inputs.forEach(i => {
-            let key = `${i.dataset.sub}_${i.dataset.exam}`;
-            record.scores[key] = i.value || 0;
-        });
-
-        // Send to Sheet
         try {
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-            alert("Record Saved Successfully!");
-        } catch(e) { alert("Error saving record"); }
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+            alert(exam + " Marks Updated Successfully!");
+            loadGrandTotal(roll); // Refresh View
+        } catch(e) { alert("Error uploading marks"); }
     }
 
-    async function refreshData() {
-        let tbody = document.getElementById('adminTableBody');
-        tbody.innerHTML = "Loading records...";
+    async function loadGrandTotal(roll) {
+        // Fetch full year data for this student and show grand total
+        const res = await fetch(`${SCRIPT_URL}?type=fullRecord&roll=${roll}`);
+        const data = await res.json();
         
-        try {
-            let res = await fetch(`${SCRIPT_URL}?type=all`);
-            let data = await res.json();
-            
-            tbody.innerHTML = "";
-            data.forEach(r => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${r.roll}</td>
-                        <td>${r.name}</td>
-                        <td>${r.cls}</td>
-                        <td>${r.pt_sum}</td>
-                        <td>${r.sa1}</td>
-                        <td>${r.pt_late_sum}</td>
-                        <td>${r.sa2}</td>
-                        <td><strong>${r.grand_total}</strong></td>
-                        <td><button onclick="printSingle('${r.roll}')">Print</button></td>
-                    </tr>
-                `;
-            });
-        } catch(e) { tbody.innerHTML = "No records found yet."; }
+        const recordDiv = document.getElementById('liveRecords');
+        if(data.name) {
+            recordDiv.innerHTML = `
+                <div class="record-card">
+                    <div>
+                        <strong>${data.name} (Roll: ${data.roll})</strong><br>
+                        <small>Class: ${data.class}</small>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="badge" style="background:green;">Grand Total: ${data.grandTotal}</span><br>
+                        <span class="badge" style="background:blue;">Percentage: ${data.percentage}%</span>
+                    </div>
+                </div>
+            `;
+        }
     }
 </script>
+
 </body>
 </html>
