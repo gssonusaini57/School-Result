@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <title>Khalsa International School Result System</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 800px; background: white; padding: 25px; margin: 10px auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #1a237e; text-align: center; border-bottom: 2px solid #1a237e; padding-bottom: 10px; }
+        .section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; margin: 5px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-save { background: #28a745; color: white; }
+        .btn-search { background: #f57c00; color: white; }
+        #reportCard { display: none; margin-top: 30px; border: 8px double #1a237e; padding: 30px; background: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        @media print { .no-print { display: none; } #reportCard { display: block !important; margin-top: 0; } }
+    </style>
+</head>
+<body>
+
+<div class="container no-print">
+    <h2>Result Management System</h2>
+    
+    <div class="section" style="background: #fff3e0;">
+        <label><strong>Purana Record Search Karo:</strong></label>
+        <div class="grid">
+            <input type="text" id="searchRoll" placeholder="Roll Number Bharo">
+            <button class="btn-search" onclick="searchData()">Search Record</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <label><strong>Student Detail:</strong></label>
+        <div class="grid">
+            <input type="text" id="name" placeholder="Name">
+            <input type="text" id="roll" placeholder="Roll No">
+            <select id="className"><option value="10th">10th Class</option><option value="9th">9th Class</option></select>
+            <input type="text" id="session" value="2025-26">
+        </div>
+        <label><strong>Marks (Out of 100):</strong></label>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+            <input type="number" id="m" placeholder="Maths">
+            <input type="number" id="s" placeholder="Science">
+            <input type="number" id="p" placeholder="Punjabi">
+            <input type="number" id="e" placeholder="English">
+            <input type="number" id="h" placeholder="Hindi">
+            <input type="number" id="ss" placeholder="SSt">
+        </div>
+        <button class="btn-save" onclick="generateAndSave()">Save & Generate Report Card</button>
+    </div>
+</div>
+
+<div id="reportCard" class="container">
+    <div style="text-align: center;">
+        <h1 style="margin:0; color:#1a237e;">KHALSA INTERNATIONAL SCHOOL</h1>
+        <p>Annual Examination Result - Session <span id="rSession"></span></p>
+    </div>
+    <hr>
+    <div class="grid">
+        <p><strong>Name:</strong> <span id="rName"></span></p>
+        <p><strong>Roll No:</strong> <span id="rRoll"></span></p>
+        <p><strong>Class:</strong> <span id="rClass"></span></p>
+    </div>
+    <table id="marksTable">
+        <thead><tr><th>Subject</th><th>Max Marks</th><th>Obtained</th><th>Grade</th></tr></thead>
+        <tbody id="rBody"></tbody>
+    </table>
+    <div class="grid" style="background:#f2f2f2; padding:10px; margin-top:15px; border:1px solid #333;">
+        <span><strong>Total:</strong> <span id="rTotal"></span>/600</span>
+        <span><strong>Percentage:</strong> <span id="rPer"></span>%</span>
+        <span><strong>Result:</strong> <span id="rStatus"></span></span>
+    </div>
+    <button class="no-print" onclick="window.print()" style="background:#007bff; color:white;">Print / Save PDF</button>
+</div>
+
+<script>
+const SCRIPT_URL = 'TUHADA_SCRIPT_URL_ITHE_PAO';
+
+function getGrade(m) {
+    if(m >= 90) return 'A+'; if(m >= 80) return 'A'; if(m >= 70) return 'B';
+    if(m >= 60) return 'C'; if(m >= 33) return 'D'; return 'E';
+}
+
+async function generateAndSave() {
+    const data = {
+        name: document.getElementById('name').value,
+        roll: document.getElementById('roll').value,
+        cls: document.getElementById('className').value,
+        session: document.getElementById('session').value,
+        maths: parseInt(document.getElementById('m').value)||0,
+        science: parseInt(document.getElementById('s').value)||0,
+        punjabi: parseInt(document.getElementById('p').value)||0,
+        english: parseInt(document.getElementById('e').value)||0,
+        hindi: parseInt(document.getElementById('h').value)||0,
+        sst: parseInt(document.getElementById('ss').value)||0
+    };
+    data.total = data.maths+data.science+data.punjabi+data.english+data.hindi+data.sst;
+    data.per = (data.total/6).toFixed(2);
+    data.status = (data.maths<33||data.science<33||data.punjabi<33||data.english<33||data.hindi<33||data.sst<33) ? "RE-APPEAR" : "PASSED";
+
+    // Show on Report Card
+    document.getElementById('rName').innerText = data.name.toUpperCase();
+    document.getElementById('rRoll').innerText = data.roll;
+    document.getElementById('rClass').innerText = data.cls;
+    document.getElementById('rSession').innerText = data.session;
+    document.getElementById('rTotal').innerText = data.total;
+    document.getElementById('rPer').innerText = data.per;
+    document.getElementById('rStatus').innerText = data.status;
+    document.getElementById('rStatus').className = (data.status==="PASSED") ? "pass" : "fail";
+
+    const subjects = [['Maths', data.maths],['Science', data.science],['Punjabi', data.punjabi],['English', data.english],['Hindi', data.hindi],['SSt', data.sst]];
+    let rows = "";
+    subjects.forEach(s => { rows += `<tr><td>${s[0]}</td><td>100</td><td>${s[1]}</td><td>${getGrade(s[1])}</td></tr>`; });
+    document.getElementById('rBody').innerHTML = rows;
+    document.getElementById('reportCard').style.display = 'block';
+
+    // Save to Sheet
+    try {
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+        alert("Record Saved to Google Sheet!");
+    } catch(e) { alert("Error saving data"); }
+}
+
+async function searchData() {
+    const roll = document.getElementById('searchRoll').value;
+    try {
+        const res = await fetch(`${SCRIPT_URL}?roll=${roll}`);
+        const data = await res.json();
+        if(data.name) {
+            document.getElementById('name').value = data.name;
+            document.getElementById('roll').value = data.roll;
+            document.getElementById('className').value = data.cls;
+            alert("Record Found! Click 'Save & Generate' to see Report Card.");
+        } else { alert("No Record Found"); }
+    } catch(e) { alert("Search Error"); }
+}
+</script>
+</body>
+</html>
